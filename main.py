@@ -1,10 +1,12 @@
 import os
+import platform
 from PIL import Image
 import PyPDF2
 from docx import Document
 from openpyxl import load_workbook
 import argparse
-from win32com import client
+if platform.system().lower() == "windows":
+    from win32com import client
 
 def clear_metadata_image(image_path):
     try:
@@ -45,6 +47,7 @@ def clear_metadata_word(doc_path):
         doc.core_properties.company = ""
         doc.core_properties.revision = 1
         doc.core_properties.program_name = ""
+        doc.core_properties.content_status = ""
 
         doc.save(doc_path)
     except Exception as e:
@@ -97,7 +100,7 @@ def clear_metadata_folder(folder_path):
                 clear_metadata_pdf(file_path)
             elif file.lower().endswith('.docx'):
                 clear_metadata_word(file_path)
-            elif file.lower().endswith('doc'):
+            elif file.lower().endswith('doc') and platform.system().lower() == "windows":
                 clear_metadata_doc(file_path)
             elif file.lower().endswith(('.xlsx', '.xls')):
                 clear_metadata_excel(file_path)
